@@ -12,6 +12,7 @@ import { Field } from "../../../components/ui/field";
 import { Textarea } from "../../../components/ui/textarea";
 import DeleteConfirm from "./shared/DeleteConfirm";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import {
   addEducation,
   deleteEducation,
@@ -49,7 +50,7 @@ const EducationSection = ({ resumeId, resume, otherResumes = [] }) => {
     setEdit(null);
   };
 
-  const save = () => {
+  const save = async () => {
     const payload = {
       ...form,
       endDate: form.isCurrentlyStudying ? null : form.endDate || null,
@@ -62,17 +63,15 @@ const EducationSection = ({ resumeId, resume, otherResumes = [] }) => {
         })
       : addEducation({ resumeId, data: payload });
 
-    dispatch(thunk);
-    console.log("save education", form);
+    await dispatch(thunk).unwrap();
+    toast.success(edit ? "Education updated" : "Education added");
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const handleDelete = () => {
-    dispatch(deleteEducation({resumeId,educationId:delItem.id}))
-    console.log("deleting", delItem);
+  const handleDelete = async () => {
+    await dispatch(deleteEducation({ resumeId, educationId: delItem.id })).unwrap();
+    toast.success("Education deleted");
   };
-
-  console.log("edit", edit);
 
   return (
     <div className="space-y-5">

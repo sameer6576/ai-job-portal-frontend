@@ -11,6 +11,7 @@ import DeleteConfirm from "./shared/DeleteConfirm";
 
 import { Progress } from "../../../components/ui/progress";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import {
   addSkill,
   deleteSkill,
@@ -59,19 +60,19 @@ const SkillsSection = ({ resumeId, resume, otherResumes = [] }) => {
     setForm(skillsData)
   };
 
-  const save = () => {
+  const save = async () => {
     const thunk = edit
       ? updateSkill({ resumeId, skillId: edit.id, data: form })
       : addSkill({ resumeId, data: form });
 
-    dispatch(thunk);
-    console.log("save skills", form);
+    await dispatch(thunk).unwrap();
+    toast.success(edit ? "Skill updated" : "Skill added");
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const handleDelete = () => {
-    dispatch(deleteSkill({resumeId,skillId:delItem.id}))
-    console.log("deleting", delItem);
+  const handleDelete = async () => {
+    await dispatch(deleteSkill({ resumeId, skillId: delItem.id })).unwrap();
+    toast.success("Skill deleted");
   };
 
   return (

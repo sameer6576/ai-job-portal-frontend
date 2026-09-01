@@ -13,9 +13,13 @@ import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import TagInput from "./shared/TagInput";
 import DeleteConfirm from "./shared/DeleteConfirm";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import AiPromptDialog from "../../../components/ai/AiPromptDialog";
+import { generateExperienceBullets } from "../../../reduxt-store/ai/aiThunk";
 import {
   addWorkExperience,
+  deleteWorkExperience,
   updateWorkExperience,
 } from "../../../reduxt-store/resume/resumeThunk";
 
@@ -45,24 +49,24 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
   const [delItem, setDel] = useState(null);
   const [edit, setEdit] = useState(null);
   const [form, setForm] = useState(experienceData);
+  const [isBulletsOpen, setIsBulletsOpen] = useState(false);
   const workExperienceData = resume.workExperiences || [];
   const dispatch = useDispatch();
+  const { isGeneratingBullets } = useSelector((store) => store.ai);
 
   const openEdit = (item) => {
     setEdit(item);
     setForm(item);
     setOpen(true);
-    console.log("item",item)
   };
 
   const openAdd = () => {
-      setEdit(null)
+    setEdit(null);
     setOpen(true);
-    setForm(experienceData)
-  
+    setForm(experienceData);
   };
 
-  const save = () => {
+  const save = async () => {
     const payload = {
       ...form,
       endDate: form.isCurrentJob ? null : form.endDate || null,
@@ -75,18 +79,47 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
         })
       : addWorkExperience({ resumeId, data: payload });
 
-    dispatch(thunk);
-    setEdit(null)
-    console.log("save work experience", form);
+    await dispatch(thunk).unwrap();
+    toast.success(edit ? "Experience updated" : "Experience added");
+    setEdit(null);
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const handleDelete = () => {
-    console.log("deleting", delItem);
+  const handleDelete = async () => {
+    await dispatch(
+      deleteWorkExperience({ resumeId, workExperienceId: delItem.id }),
+    ).unwrap();
+    toast.success("Experience deleted");
   };
 
+  const handleGenerateBullets = async (prompt) => {
+    if (!form.jobTitle?.trim() || !form.description?.trim()) {
+      throw new Error(
+        "Add a job title and a short description before generating bullets",
+      );
+    }
 
-  console.log("edit",edit)
+    const result = await dispatch(
+      generateExperienceBullets({
+        jobTitle: form.jobTitle,
+        company: form.companyName || null,
+        rawDescription: form.description,
+        achievementsHint: prompt || null,
+      }),
+    ).unwrap();
+
+    const bullets = result.bullets ?? [];
+    if (bullets.length === 0) {
+      throw new Error("The AI did not return any bullet points");
+    }
+
+    setForm((current) => ({
+      ...current,
+      description: bullets.map((bullet) => `• ${bullet}`).join("\n"),
+    }));
+    toast.success("Bullet points generated");
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -203,8 +236,14 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
         <div className="space-y-1">
           <div className="flex items-center justify-between">
             <Label>Description</Label>
-            <Button type="button" variant="ghost" size="sm">
-              Generate Bullets
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsBulletsOpen(true)}
+              disabled={isGeneratingBullets}
+            >
+              {isGeneratingBullets ? "Generating..." : "Generate Bullets"}
             </Button>
           </div>
           <Textarea
@@ -235,7 +274,16 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
         open={!!delItem}
         onClose={() => setDel(null)}
         onConfirm={handleDelete}
-        label={"Work Experience "}
+        label={"Work Experience"}
+      />
+      <AiPromptDialog
+        open={isBulletsOpen}
+        onClose={() => setIsBulletsOpen(false)}
+        onGenerate={handleGenerateBullets}
+        title="Generate experience bullets"
+        description="The job title, company and current description are sent automatically. Add achievements or instructions to steer the bullets."
+        placeholder="e.g. Emphasise the 40% latency reduction and the migration to Kafka."
+        generateLabel="Generate bullets"
       />
     </div>
   );

@@ -6,6 +6,7 @@ import JobField from "./JobField";
 import { useState } from "react";
 import { Textarea } from "../../../components/ui/textarea";
 import AiButton from "./AiButton";
+import AiPromptDialog from "../../../components/ai/AiPromptDialog";
 import { Layers } from "lucide-react";
 import {
   Select,
@@ -112,6 +113,8 @@ const CreateJob = ({ isEdit = false }) => {
     expiresAt: "",
   });
 
+  const [isDescriptionAiOpen, setIsDescriptionAiOpen] = useState(false);
+
   const set = (f) => (e) => setForm((p) => ({ ...p, [f]: e.target.value }));
   const setVal = (f) => (v) => setForm((prev) => ({ ...prev, [f]: v }));
 
@@ -189,16 +192,16 @@ const CreateJob = ({ isEdit = false }) => {
 
   // react, spring boot, node
 
-  const handleGenerateDescription = () => {
+  const handleGenerateDescription = async (additionalContext) => {
     if (!form.title) return;
 
     const categoryName = categories.find(
       (c) => String(c.id) === form.categoryId,
     )?.name;
 
-    dispatch(
+    const result = await dispatch(
       generateJobDescription({
-        title: form.title,
+        jobTitle: form.title,
         skills: selectedSkillsName(
           skills.map((s) => ({ id: s.id, name: s.name })),
         ),
@@ -206,8 +209,11 @@ const CreateJob = ({ isEdit = false }) => {
         jobType: form.jobType || undefined,
         workMode: form.workMode || undefined,
         category: categoryName,
+        additionalContext: additionalContext || undefined,
       }),
-    );
+    ).unwrap();
+
+    return result;
   };
 
   const handleAutoFillRequirements = () => {
@@ -295,9 +301,8 @@ const CreateJob = ({ isEdit = false }) => {
   }, [jobDescription]);
 
   useEffect(() => {
-    // console.log("job description from redux store ",jobDescription)
     if (!jobRequirements) return;
-    setForm((f) => ({ ...f, description: jobRequirements.content }));
+    setForm((f) => ({ ...f, requirements: jobRequirements.content }));
   }, [jobRequirements]);
 
   useEffect(() => {
@@ -434,7 +439,7 @@ const CreateJob = ({ isEdit = false }) => {
                 <AiButton
                   label={"Generate with AI"}
                   disabled={!form.title.trim()}
-                  onClick={handleGenerateDescription}
+                  onClick={() => setIsDescriptionAiOpen(true)}
                   isLoading={isGeneratingJobDescription}
                 />
               }
@@ -851,6 +856,16 @@ const CreateJob = ({ isEdit = false }) => {
           </div>
         </div>
       </div>
+
+      <AiPromptDialog
+        open={isDescriptionAiOpen}
+        onClose={() => setIsDescriptionAiOpen(false)}
+        onGenerate={handleGenerateDescription}
+        title="Generate job description"
+        description="The title, skills, category, job type and work mode are sent automatically. Add instructions to steer tone and emphasis."
+        placeholder="e.g. Emphasise remote-first culture and mention our Kafka-based platform."
+        generateLabel="Generate description"
+      />
     </div>
   );
 };

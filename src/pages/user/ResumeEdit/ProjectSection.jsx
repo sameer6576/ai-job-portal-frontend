@@ -12,6 +12,7 @@ import { Textarea } from "../../../components/ui/textarea";
 import TagInput from "./shared/TagInput";
 import DeleteConfirm from "./shared/DeleteConfirm";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import {
   addProject,
   deleteProject,
@@ -49,7 +50,7 @@ const ProjectSection = ({ resumeId, resume, otherResumes = [] }) => {
     setForm(projectData);
   };
 
-  const save = () => {
+  const save = async () => {
     const thunk = edit
       ? updateProject({
           resumeId,
@@ -57,14 +58,14 @@ const ProjectSection = ({ resumeId, resume, otherResumes = [] }) => {
           data: form,
         })
       : addProject({ resumeId, data: form });
-    dispatch(thunk);
-    console.log("save project", form);
+    await dispatch(thunk).unwrap();
+    toast.success(edit ? "Project updated" : "Project added");
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const handleDelete = () => {
-    dispatch(deleteProject({ resumeId, projectId: delItem.id }));
-    console.log("deleting", delItem);
+  const handleDelete = async () => {
+    await dispatch(deleteProject({ resumeId, projectId: delItem.id })).unwrap();
+    toast.success("Project deleted");
   };
 
   return (

@@ -8,8 +8,10 @@ import { Copy } from "lucide-react";
 import { RotateCcw } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 import { fetchResumeById } from "../../../reduxt-store/resume/resumeThunk";
 import { generateCoerLetter } from "../../../reduxt-store/ai/aiThunk";
 
@@ -23,6 +25,8 @@ const CoverLetterEditor = ({ coverLetter, setCoverLetter, selectedResume }) => {
   const { currentJob: job } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
   const { currentResume } = useSelector((store) => store.resume);
+  const { isGeneratingCoverLetter } = useSelector((store) => store.ai);
+  const [aiInstructions, setAiInstructions] = useState("");
   const dispatch = useDispatch();
 
   const handleCopy = () => {
@@ -60,14 +64,15 @@ const CoverLetterEditor = ({ coverLetter, setCoverLetter, selectedResume }) => {
       candidateSummary: resume?.summary,
       candidateSkills: candidateSkills,
       candidateExperience: candidateExperience,
+      additionalContext: aiInstructions.trim() || null,
     };
 
     try {
       const result = await dispatch(generateCoerLetter(payload)).unwrap();
-      console.log("result --- ",result)
       setCoverLetter(result.content);
+      toast.success("Cover letter generated");
     } catch (error) {
-      console.log("error", error);
+      toast.error(error || "Failed to generate cover letter");
     }
   };
   return (
@@ -98,11 +103,25 @@ const CoverLetterEditor = ({ coverLetter, setCoverLetter, selectedResume }) => {
                 experience, and summary — to create a personalized cover letter
                 tailored to this position.
               </p>
+              <div className="space-y-1.5 mb-4">
+                <Label className="text-xs text-slate-600">
+                  Additional instructions for the AI (optional)
+                </Label>
+                <Textarea
+                  value={aiInstructions}
+                  onChange={(event) => setAiInstructions(event.target.value)}
+                  rows={3}
+                  placeholder="e.g. Mention my Kafka migration work and keep the tone direct, under 200 words."
+                  className="bg-white"
+                />
+              </div>
               <Button
                 onClick={handleGenerateCoverLatterWithAi}
                 className={"py-5"}
+                disabled={isGeneratingCoverLetter}
               >
-                <Sparkles className="w-4 h-4" /> Generrate with Ai
+                <Sparkles className="w-4 h-4" />
+                {isGeneratingCoverLetter ? "Generating..." : "Generate with AI"}
               </Button>
             </div>
           </div>

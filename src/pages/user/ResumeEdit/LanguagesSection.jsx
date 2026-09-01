@@ -12,6 +12,7 @@ import DeleteConfirm from "./shared/DeleteConfirm";
 import { Pencil } from "lucide-react";
 import { Trash2 } from "lucide-react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import {
   addLanguage,
   deleteLanguage,
@@ -43,19 +44,19 @@ const LanguagesSection = ({ resumeId, resume, otherResumes = [] }) => {
     setForm(languageData);
   };
 
-  const save = () => {
+  const save = async () => {
     const thunk = edit
       ? updateLanguage({ resumeId, languageId: edit.id, data: form })
       : addLanguage({ resumeId, data: form });
 
-    dispatch(thunk);
-    console.log("save project", form);
+    await dispatch(thunk).unwrap();
+    toast.success(edit ? "Language updated" : "Language added");
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const handleDelete = () => {
-    dispatch(deleteLanguage({ resumeId, languageId: delItem.id }));
-    console.log("deleting", delItem);
+  const handleDelete = async () => {
+    await dispatch(deleteLanguage({ resumeId, languageId: delItem.id })).unwrap();
+    toast.success("Language deleted");
   };
 
   const LANG_BG = {
@@ -123,7 +124,7 @@ const LanguagesSection = ({ resumeId, resume, otherResumes = [] }) => {
         open={!!delItem}
         onClose={() => setDel(null)}
         onConfirm={handleDelete}
-        label={"Award "}
+        label={"Language"}
       />
     </div>
   );

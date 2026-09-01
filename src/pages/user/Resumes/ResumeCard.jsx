@@ -11,11 +11,14 @@ import { Star } from "lucide-react";
 import { StarOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
 import {
   deleteResume,
   setDefaultResume,
 } from "../../../reduxt-store/resume/resumeThunk";
 import { toast } from "sonner";
+import ResumePreviewDialog from "./ResumePreviewDialog";
+import CareerFeedbackDialog from "./CareerFeedbackDialog";
 
 
 
@@ -38,6 +41,8 @@ if (resume.workExperiences?.length > 0) score += 20;
 const ResumeCard = ({ resume }) => {
   const dispatch=useDispatch();
   const navigate=useNavigate()
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const handleSetDefaultResume = async () => {
     try {
@@ -92,7 +97,12 @@ const ResumeCard = ({ resume }) => {
 
         {/* actions */}
         <div className="flex items-center gap-1.5 mb-2">
-          <Button className={"flex-1"} variant="outline" size="sm">
+          <Button
+            className={"flex-1"}
+            variant="outline"
+            size="sm"
+            onClick={() => setIsPreviewOpen(true)}
+          >
             <Eye className="h-3 w-3 mr-1" />
             View
           </Button>
@@ -116,6 +126,7 @@ const ResumeCard = ({ resume }) => {
           className="w-full text-xs text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700 mb-2"
           variant="outline"
           size="sm"
+          onClick={() => setIsFeedbackOpen(true)}
         >
           <Sparkles className="h-3.5 w-3.5 mr-1.5" />
           AI Career Feedback
@@ -138,6 +149,17 @@ const ResumeCard = ({ resume }) => {
           </div>
         )}
       </CardContent>
+
+      <ResumePreviewDialog
+        open={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        resumeId={resume.id}
+      />
+      <CareerFeedbackDialog
+        open={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+        resume={resume}
+      />
     </Card>
   );
 };
