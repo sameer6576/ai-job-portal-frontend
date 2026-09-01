@@ -34,7 +34,7 @@ const RoleButton = ({ setValue, selectedRole,name,description,role }) => {
         >
           {name}
         </p>
-        <p>{description}b</p>
+        <p>{description}</p>
       </div>
      {selectedRole==role && <div className="absolute top-3 right-3 w-5 h-5 rounded-full ">
         <CheckCircle />
