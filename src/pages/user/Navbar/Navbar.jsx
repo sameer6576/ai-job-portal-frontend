@@ -25,7 +25,7 @@ const Navbar = () => {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link className="flex items-center gap-2" to="/">
           <Briefcase />
-          <span className="text-xl font-bold text-slate-900">ZOSHIRE</span>
+          <span className="text-xl font-bold text-slate-900">JobMate</span>
         </Link>
 
         <div className="flex items-center gap-4">

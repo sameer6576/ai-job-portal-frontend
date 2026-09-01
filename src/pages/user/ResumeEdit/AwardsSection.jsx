@@ -7,7 +7,6 @@ import DeleteConfirm from "./shared/DeleteConfirm"
 import FRow from "./shared/FRow"
 import { Input } from "../../../components/ui/input"
 import { Textarea } from "../../../components/ui/textarea"
-import { toast } from "sonner"
 import { addAward, deleteAward, updateAward } from "../../../reduxt-store/resume/resumeThunk"
 
 const EMPTY_AWARD = { title: "", issuedBy: "", awardDate: "", description: "", displayOrder: 0 }
@@ -34,7 +33,6 @@ const AwardsSection = ({ resumeId, resume }) => {
     await dispatch(editing
       ? updateAward({ resumeId, awardId: editing.id, data: form })
       : addAward({ resumeId, data: form })).unwrap()
-    toast.success(editing ? "Award updated" : "Award added")
   }
 
   return (
@@ -59,7 +57,6 @@ const AwardsSection = ({ resumeId, resume }) => {
         onClose={() => setDeleting(null)}
         onConfirm={async () => {
           await dispatch(deleteAward({ resumeId, awardId: deleting.id })).unwrap()
-          toast.success("Award deleted")
         }}
         label="Award"
       />

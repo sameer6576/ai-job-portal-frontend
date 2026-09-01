@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateResumeSummary } from "../../../reduxt-store/resume/resumeThunk";
 import { generateResumeSummary } from "../../../reduxt-store/ai/aiThunk";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { notifyError } from "../../../lib/notifications";
 import AiPromptDialog from "../../../components/ai/AiPromptDialog";
 import FRow from "./shared/FRow";
 
@@ -55,9 +55,8 @@ const SummarySection = ({ resumeId, resume, otherResumes = [] }) => {
   const handleSave = async () => {
     try {
       await dispatch(updateResumeSummary({ resumeId, summary: text })).unwrap();
-      toast.success("Summary saved");
     } catch (error) {
-      toast.error(error || "Failed to save summary");
+      notifyError(error || "Failed to save summary");
     }
   };
 
@@ -65,7 +64,6 @@ const SummarySection = ({ resumeId, resume, otherResumes = [] }) => {
     const payload = buildSummaryPayload(resume, targetJobTitle, prompt);
     const result = await dispatch(generateResumeSummary(payload)).unwrap();
     setText(result.content ?? "");
-    toast.success("Summary generated — review it before saving");
   };
 
   useEffect(() => {

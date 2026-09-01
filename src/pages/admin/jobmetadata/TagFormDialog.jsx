@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Dialog,
   DialogContent,
@@ -18,30 +17,35 @@ const TagFormDialog = ({
       isEdit,
   open,
   onClose,
-  onSubmit,
   initialData,
 }) => {
   const dispatch=useDispatch()
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
      const [form, setForm] = useState({
         name: "",
         category: "",
       });
     
-      const handleSubmit = (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if(initialData){
-          dispatch(updateTag({
-            id:initialData.id,
-            ...form
-          }))
-        }else dispatch(createTag(form))
-        console.log("form data", form);
+        setIsSubmitting(true);
+        try {
+          await dispatch(initialData
+            ? updateTag({ id: initialData.id, ...form })
+            : createTag(form)).unwrap();
+          onClose();
+        } catch {
+          // The global API interceptor displays the backend error.
+        } finally {
+          setIsSubmitting(false);
+        }
       };
     
       useEffect(() => {
         if (open) {
+          // Reset the controlled form whenever a different dialog record opens.
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setForm({
             name: initialData?.name ?? "",
             category: initialData?.category ?? ""
@@ -80,11 +84,12 @@ const TagFormDialog = ({
               className={"flex-1"}
               variant="outline"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" className={"flex-1"} onClick={onClose}>
-              {isEdit ? "Save Changes" : "Create Tag"}
+            <Button type="submit" className={"flex-1"} disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : isEdit ? "Save Changes" : "Create Tag"}
             </Button>
           </div>
         </form>

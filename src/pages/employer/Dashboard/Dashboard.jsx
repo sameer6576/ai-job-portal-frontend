@@ -1,5 +1,3 @@
-import React from "react";
-import { jobs } from "../../user/jobs/dummyJobs";
 import { Briefcase } from "lucide-react";
 import { TrendingUp } from "lucide-react";
 import { FileText } from "lucide-react";
@@ -29,6 +27,7 @@ const Dashboard = () => {
 const { applications } = useSelector((store) => store.application);
   const activeJobs=[...jobs].filter((job)=>job.status=="OPEN")
   const shortListed=[...applications].filter((app)=>app.status=="SHORTLISTED")
+  const highAiMatches = applications.filter((app) => Number(app.aiScore) >= 80);
  
   const stats = [
     {
@@ -55,13 +54,13 @@ const { applications } = useSelector((store) => store.application);
 
     useEffect(() => {
       dispatch(fetchMyCompany());
-    }, []);
+    }, [dispatch]);
 
       useEffect(() => {
       if (myCompany) {
-        dispatch(fetchMyJobs(myCompany?.id));
+        dispatch(fetchMyJobs());
       }
-    }, [myCompany]);
+    }, [dispatch, myCompany]);
     
   return (
     <div className="p-6 space-y-6">
@@ -103,12 +102,11 @@ const { applications } = useSelector((store) => store.application);
               <div className="flex-shrink-0 h-2 w-2 rounded-full bg-primary mt-2" />
               <div>
                 <p className="font-medium text-slate-900">
-                  {" "}
-                  15 candidates auto-shortlisted today
+                  {shortListed.length} shortlisted candidate
+                  {shortListed.length === 1 ? "" : "s"}
                 </p>
                 <p className="text-sm text-slate-600 mt-1">
-                  Based on AI analysis, these candidates match 90%+ of your job
-                  requirements for Senior React Developer position.
+                  This count is based on the current application statuses.
                 </p>
               </div>
             </div>
@@ -117,27 +115,16 @@ const { applications } = useSelector((store) => store.application);
               <div className="flex-shrink-0 h-2 w-2 rounded-full bg-green-600 mt-2" />
               <div>
                 <p className="font-medium text-slate-900">
-                  3 high-potential candidates need review
+                  {highAiMatches.length} candidate
+                  {highAiMatches.length === 1 ? "" : "s"} with an AI score of
+                  80 or higher
                 </p>
                 <p className="text-sm text-slate-600 mt-1">
-                  These candidates have exceptional skills but limited
-                  experience. Worth considering for junior roles.
+                  Review the AI screening details before making a hiring decision.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 h-2 w-2 rounded-full bg-amber-600 mt-2" />
-              <div>
-                <p className="font-medium text-slate-900">
-                  Suggestion: Update job description
-                </p>
-                <p className="text-sm text-slate-600 mt-1">
-                  Your DevOps Engineer posting has low application rate.
-                  Consider adjusting salary range or requirements.
-                </p>
-              </div>
-            </div>
           </div>
           <div className="mt-4 pt-4 border-t border-primary/20">
             <Link to={"/employer/ai-screening"}>

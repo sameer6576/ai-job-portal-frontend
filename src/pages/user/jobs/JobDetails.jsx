@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "../../../components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -17,8 +16,6 @@ import { Clock } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
 import { Share } from "lucide-react";
 import { Separator } from "../../../components/ui/separator";
-import { Users } from "lucide-react";
-import { Eye } from "lucide-react";
 import {  useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -60,7 +57,7 @@ const JobDetails = () => {
       dispatch(fetchJobById(id))
     }
 
-  },[id])
+  },[dispatch, id])
 
   useEffect(() => {
     if (token) {
@@ -284,16 +281,6 @@ const location = [job?.city, job?.state, job?.country];
                 </div>
               </div>
 
-              <Separator />
-
-              <div className="flex gap-4 text-xs text-slate-500">
-                <span className="flex items-center gap-1">
-                  <Users className="h-3.5 w-3.5"/> 20 applicants
-                </span>
-                <span className="flex items-center gap-1">
-                  <Eye className="h-3.5 w-3.5"/> 150 views
-                </span>
-              </div>
             </CardContent>
           </Card>
         </div>

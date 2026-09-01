@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
+import { notifyError } from "../../../lib/notifications";
 import { Label } from "@/components/ui/label";
 import { fetchResumeById } from "../../../reduxt-store/resume/resumeThunk";
 import { generateCoerLetter } from "../../../reduxt-store/ai/aiThunk";
@@ -70,9 +70,8 @@ const CoverLetterEditor = ({ coverLetter, setCoverLetter, selectedResume }) => {
     try {
       const result = await dispatch(generateCoerLetter(payload)).unwrap();
       setCoverLetter(result.content);
-      toast.success("Cover letter generated");
     } catch (error) {
-      toast.error(error || "Failed to generate cover letter");
+      notifyError(error || "Failed to generate cover letter");
     }
   };
   return (

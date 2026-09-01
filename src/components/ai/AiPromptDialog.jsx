@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
-import { toast } from "sonner";
+import { notifyError } from "../../lib/notifications";
 import {
   Dialog,
   DialogContent,
@@ -37,7 +37,7 @@ const AiPromptDialog = ({
       setPrompt("");
       onClose();
     } catch (error) {
-      toast.error(
+      notifyError(
         typeof error === "string" ? error : error?.message || "AI generation failed",
       );
     } finally {

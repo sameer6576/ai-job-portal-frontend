@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Check, User } from "lucide-react"
-import { toast } from "sonner"
+import { notifyError } from "../../../lib/notifications"
 import FRow from "./shared/FRow"
 import { Input } from "../../../components/ui/input"
 import { Button } from "../../../components/ui/button"
@@ -80,15 +80,14 @@ const PersonalInfoSection = ({ resumeId, resume }) => {
     setErrors(urlErrors)
 
     if (Object.values(urlErrors).some(Boolean)) {
-      toast.error("Please correct the invalid URLs");
+      notifyError("Please correct the invalid URLs");
       return
     }
 
     try {
       await dispatch(updatePersonalInfo({ resumeId, data: form })).unwrap()
-      toast.success("Personal information saved")
     } catch (error) {
-      toast.error(error || "Failed to save personal information")
+      notifyError(error || "Failed to save personal information")
     }
   }
 

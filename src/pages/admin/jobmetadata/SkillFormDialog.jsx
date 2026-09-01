@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   Dialog,
   DialogContent,
@@ -19,7 +17,7 @@ import {
 } from "../../../components/ui/select";
 import { Button } from "../../../components/ui/button";
 import { useDispatch } from "react-redux";
-import { createSkill, fetchSkills, updateSkill } from "../../../reduxt-store/jobMeta/jobMetaThunk";
+import { createSkill, updateSkill } from "../../../reduxt-store/jobMeta/jobMetaThunk";
 
 const SKILL_CATEGORIES = [
   "PROGRAMMING_LANGUAGE",
@@ -37,7 +35,6 @@ const SkillFormDialog = ({
   isEdit,
   open,
   onClose,
-  onSubmit,
   initialData,
   
 }) => {
@@ -46,22 +43,27 @@ const SkillFormDialog = ({
     category: "",
   });
   const dispatch=useDispatch()
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if(initialData){
-      const data={
-        id:initialData.id,
-        ...form
-      }
-      console.log("skill data", data)
-      dispatch(updateSkill(data))
-    }else dispatch(createSkill(form))
-    console.log("form data", form);
+    setIsSubmitting(true);
+    try {
+      await dispatch(initialData
+        ? updateSkill({ id: initialData.id, ...form })
+        : createSkill(form)).unwrap();
+      onClose();
+    } catch {
+      // The global API interceptor displays the backend error.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
     if (open) {
+      // Reset the controlled form whenever a different dialog record opens.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         name: initialData?.name ?? "",
         category: initialData?.category ?? ""
@@ -121,11 +123,12 @@ const SkillFormDialog = ({
               className={"flex-1"}
               variant="outline"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" className={"flex-1"} onClick={onClose}>
-              {isEdit ? "Save Changes" : "Create Skill"}
+            <Button type="submit" className={"flex-1"} disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : isEdit ? "Save Changes" : "Create Skill"}
             </Button>
           </div>
         </form>

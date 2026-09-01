@@ -16,15 +16,13 @@ import { changePassword } from "../../../reduxt-store/user/userThunk";
 const AccountSecurityCard = ({ user }) => {
   const dispatch = useDispatch();
   const [passwords, setPasswords] = useState({ currentPassword: "", newPassword: "" });
-  const [message, setMessage] = useState("");
   const submit = async (event) => {
     event.preventDefault();
     try {
       await dispatch(changePassword(passwords)).unwrap();
       setPasswords({ currentPassword: "", newPassword: "" });
-      setMessage("Password changed successfully.");
-    } catch (error) {
-      setMessage(error);
+    } catch {
+      // The global API interceptor displays the backend error.
     }
   };
   return (
@@ -58,34 +56,12 @@ const AccountSecurityCard = ({ user }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* phone */}
-
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-              Sign-in Method:
-            </Label>
-
-            <p className="text-sm text-slate-600 py-2">Email & Password</p>
-          </div>
-
-      
-
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-              Email Verified:
-            </Label>
-
-            <p>Not Verified</p>
-          </div>
-        </div>
         <form onSubmit={submit} className="space-y-3 border-t border-slate-200 pt-4">
           <h3 className="font-semibold text-slate-800">Change password</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input type="password" required placeholder="Current password" value={passwords.currentPassword} onChange={(event) => setPasswords({ ...passwords, currentPassword: event.target.value })} />
             <Input type="password" required minLength={8} placeholder="New password" value={passwords.newPassword} onChange={(event) => setPasswords({ ...passwords, newPassword: event.target.value })} />
           </div>
-          {message && <p className="text-sm text-slate-600">{message}</p>}
           <Button type="submit">Change password</Button>
         </form>
       </CardContent>

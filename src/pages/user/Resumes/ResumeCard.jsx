@@ -16,7 +16,7 @@ import {
   deleteResume,
   setDefaultResume,
 } from "../../../reduxt-store/resume/resumeThunk";
-import { toast } from "sonner";
+import { notifyError } from "../../../lib/notifications";
 import ResumePreviewDialog from "./ResumePreviewDialog";
 import CareerFeedbackDialog from "./CareerFeedbackDialog";
 
@@ -47,9 +47,8 @@ const ResumeCard = ({ resume }) => {
   const handleSetDefaultResume = async () => {
     try {
       await dispatch(setDefaultResume(resume.id)).unwrap();
-      toast.success("Default resume updated");
     } catch (error) {
-      toast.error(error || "Failed to set default resume");
+      notifyError(error || "Failed to set default resume");
     }
   };
 
@@ -60,9 +59,8 @@ const ResumeCard = ({ resume }) => {
 
     try {
       await dispatch(deleteResume(resume.id)).unwrap();
-      toast.success("Resume deleted successfully");
     } catch (error) {
-      toast.error(error || "Failed to delete resume");
+      notifyError(error || "Failed to delete resume");
     }
   };
 

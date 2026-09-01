@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +27,6 @@ const CategoryFormDialog = ({
   isEdit,
   open,
   onClose,
-  onSubmit,
   initialData,
   rootCategories,
 }) => {
@@ -40,32 +38,30 @@ const CategoryFormDialog = ({
     parentId: "",
   });
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-      console.log("initial data handle submit", initialData)
-
-    if (initialData) {
-
-    
-      dispatch(
-        updateCategory({
+    setIsSubmitting(true);
+    try {
+      await dispatch(initialData
+        ? updateCategory({
           id: initialData.id,
           ...form,
-        }),
-      );
-    } else {
-      dispatch(createCategory(form));
-       
+        })
+        : createCategory(form)).unwrap();
+      onClose();
+    } catch {
+      // The global API interceptor displays the backend error.
+    } finally {
+      setIsSubmitting(false);
     }
-
-    console.log("form data", form, isEdit);
   };
-
-  console.log("initial data ---- ",initialData)
 
   useEffect(() => {
     if (open) {
+      // Reset the controlled form whenever a different dialog record opens.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         name: initialData?.name ?? "",
         description: initialData?.description ?? "",
@@ -127,7 +123,7 @@ const CategoryFormDialog = ({
             <Select
               value={form.parentId}
               onValueChange={(value) =>
-                setForm((f) => ({ ...f, iconUrl: value }))
+                setForm((f) => ({ ...f, parentId: value }))
               }
             >
               <SelectTrigger className="text-sm w-full">
@@ -149,11 +145,12 @@ const CategoryFormDialog = ({
               className={"flex-1"}
               variant="outline"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" className={"flex-1"} onClick={onClose}>
-              {isEdit ? "Save Changes" : "Create Category"}
+            <Button type="submit" className={"flex-1"} disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : isEdit ? "Save Changes" : "Create Category"}
             </Button>
           </div>
         </form>

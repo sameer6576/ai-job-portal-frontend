@@ -1,5 +1,4 @@
 import { BookMarked } from "lucide-react";
-import React from "react";
 import { Briefcase } from "lucide-react";
 
 import SavedJobCard from "./SavedJobCard";
@@ -8,14 +7,16 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchMySavedJobs } from "../../../reduxt-store/saveJobs/saveJobThunk";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const SavedJobs = () => {
   const dispatch=useDispatch()
+  const navigate = useNavigate()
   const {savedJobs}=useSelector(store=>store.savedJob)
 
   useEffect(()=>{
-dispatch(fetchMySavedJobs())
-  },[])
+    dispatch(fetchMySavedJobs())
+  },[dispatch])
 
 
   return (
@@ -29,7 +30,11 @@ dispatch(fetchMySavedJobs())
          {savedJobs.length>0 && <p className="text-slate-500 text-sm mt-1">{savedJobs.length} Job Saved</p>}
         </div>
         <div>
-          <Button variant="outline" className={"py-5"}>
+          <Button
+            variant="outline"
+            className={"py-5"}
+            onClick={() => navigate("/jobs")}
+          >
             <Briefcase />
             Browse Jobs
           </Button>

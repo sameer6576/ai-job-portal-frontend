@@ -1,5 +1,4 @@
 import { Sparkles } from "lucide-react";
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -8,13 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-
-const AUTH_IMAGE =
-  "https://res.cloudinary.com/dcpesbd8q/image/upload/v1772374334/zosh%20hire/auth_side_image_so2r2w.png";
+import authImage from "../../assets/hero.png";
 
 const indicatorsData = [
-  { dot: "bg-emerald-400", text: "100K+ Jobs" },
-  { dot: "bg-blue-400", text: "50K+ Companies" },
+  { dot: "bg-emerald-400", text: "Live Jobs" },
+  { dot: "bg-blue-400", text: "Verified Companies" },
   { dot: "bg-violet-400", text: "AI-Powered" },
 ];
 const AuthLaout = ({
@@ -29,7 +26,7 @@ const AuthLaout = ({
     <div className="min-h-screen flex">
       {/* left */}
       <section className="hidden lg:flex lg:w-[52%] xl:w-[55%] relative overflow-hidden">
-        <img src={AUTH_IMAGE} alt="" />
+        <img src={authImage} alt="" className="h-full w-full object-cover" />
 
         <div className="absolute inset-0 bg-linear-to-t from-slate-900/70 via-slate-900/10 to-transparent" />
 
@@ -39,12 +36,12 @@ const AuthLaout = ({
               <Sparkles />
             </div>
             <span className="text-sm font-semibold text-white/90 tracking-wide uppercase">
-              JobPortal.AI
+              JobMate
             </span>
           </div>
           <h2 className="text-3xl font-bold leading-snug">
             {" "}
-            Your next careerr move <br /> starts here.
+            Your next career move <br /> starts here.
           </h2>
           <p className="text-white/70 mt-3 text-sm leading-relaxed max-w-sm">
             AI-powered job matching, smart resume builder, and real-time

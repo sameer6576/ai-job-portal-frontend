@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -37,19 +36,26 @@ const UpdateStatusDialog = ({
   currentStatus,
 }) => {
     const [status,setStatus]=useState(currentStatus || "")
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const dispatch=useDispatch();
 
-
-    const handleSubmit=()=>{
-        dispatch(updateApplicationStatus({
+    const handleSubmit = async () => {
+      setIsSubmitting(true);
+      try {
+        await dispatch(updateApplicationStatus({
             id:applicationId,
             status,
             note:"employer update status"
-        }))
-        onClose()
+        })).unwrap();
+        onClose();
+      } catch {
+        // The global API interceptor displays the backend error.
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Update Application Status</DialogTitle>
@@ -72,8 +78,10 @@ const UpdateStatusDialog = ({
             </Select>
           </div>
           <div>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSubmit}>Update</Button>
+            <Button onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+            <Button onClick={handleSubmit} disabled={isSubmitting || !status}>
+              {isSubmitting ? "Updating..." : "Update"}
+            </Button>
           </div>
         </div>
       </DialogContent>

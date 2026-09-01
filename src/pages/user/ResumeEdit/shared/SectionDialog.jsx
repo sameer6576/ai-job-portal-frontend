@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { notifyError } from '../../../../lib/notifications'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../../components/ui/dialog'
 import { Button } from '../../../../components/ui/button'
 
@@ -12,7 +12,7 @@ const SectionDialog = ({title,children,open,onClose,onSave}) => {
       await onSave()
       onClose()
     } catch (error) {
-      toast.error(typeof error === "string" ? error : error?.message || "Failed to save changes")
+      notifyError(typeof error === "string" ? error : error?.message || "Failed to save changes")
     } finally {
       setIsSaving(false)
     }

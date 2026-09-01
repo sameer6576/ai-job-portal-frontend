@@ -81,7 +81,7 @@ const ApplicationTable = ({ applications, isFullMode, onUpdateStatus }) => {
               <TableCell>
                 <div className="flex items-center gap-2.5">
                   <Avatar>
-                    <AvatarImage src="" alt="zosh" className="grayscale" />
+                    <AvatarImage src="" alt="Candidate" className="grayscale" />
                     <AvatarFallback className={"bg-primary text-white"}>
                       {app.candidate?.fullName[0]}
                     </AvatarFallback>

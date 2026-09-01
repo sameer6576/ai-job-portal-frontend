@@ -1,4 +1,5 @@
 import axios from "axios";
+import { notifyError, notifySuccess } from "../lib/notifications";
 
 const api = axios.create({
   baseURL: "",
@@ -25,5 +26,32 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => {
+    const method = response.config.method?.toLowerCase();
+    const apiMessage =
+      typeof response.data?.message === "string"
+        ? response.data.message
+        : response.data?.message?.success;
+    if (
+      ["post", "put", "patch", "delete"].includes(method) &&
+      response.config.showSuccessToast !== false
+    ) {
+      notifySuccess(
+        response.config.successMessage ||
+          apiMessage ||
+          "Operation completed successfully.",
+      );
+    }
+    return response;
+  },
+  (error) => {
+    if (error.config?.showErrorToast !== false) {
+      notifyError(error);
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default api;

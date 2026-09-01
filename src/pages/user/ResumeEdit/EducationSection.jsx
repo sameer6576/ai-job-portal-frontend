@@ -12,7 +12,6 @@ import { Field } from "../../../components/ui/field";
 import { Textarea } from "../../../components/ui/textarea";
 import DeleteConfirm from "./shared/DeleteConfirm";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
 import {
   addEducation,
   deleteEducation,
@@ -64,13 +63,11 @@ const EducationSection = ({ resumeId, resume, otherResumes = [] }) => {
       : addEducation({ resumeId, data: payload });
 
     await dispatch(thunk).unwrap();
-    toast.success(edit ? "Education updated" : "Education added");
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const handleDelete = async () => {
     await dispatch(deleteEducation({ resumeId, educationId: delItem.id })).unwrap();
-    toast.success("Education deleted");
   };
 
   return (

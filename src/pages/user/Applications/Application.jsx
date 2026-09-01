@@ -1,5 +1,4 @@
 import { FileText } from "lucide-react";
-import React from "react";
 import ApplicationStateCard from "./ApplicationStateCard";
 import { Briefcase } from "lucide-react";
 import { TrendingUp } from "lucide-react";
@@ -11,34 +10,50 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../../components/ui/tabs";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import ApplicationCard from "./ApplicationCard";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchMyApplications, withdrawApplication } from "../../../reduxt-store/application/applicationThunk";
+import { fetchMyApplications } from "../../../reduxt-store/application/applicationThunk";
 import { useSelector } from "react-redux";
+
+const ACTIVE_STATUSES = ["PENDING", "REVIEWING", "INTERVIEW_SCHEDULED"];
 
 const Application = () => {
   const [selectedTab, setSelectedTab] = useState("all");
   const dispatch = useDispatch();
   const {myApplications}=useSelector(store=>store.application)
-  const stats = {
-    total: 5,
-    active: 4,
-    shortlisted: 3,
-    hired: 1,
-  };
+  const stats = useMemo(() => ({
+    total: myApplications.length,
+    active: myApplications.filter((app) => ACTIVE_STATUSES.includes(app.status)).length,
+    shortlisted: myApplications.filter((app) => app.status === "SHORTLISTED").length,
+    hired: myApplications.filter((app) => app.status === "HIRED").length,
+  }), [myApplications]);
+
+  const visibleApplications = useMemo(() => {
+    if (selectedTab === "active") {
+      return myApplications.filter((app) => ACTIVE_STATUSES.includes(app.status));
+    }
+    if (selectedTab === "shortlisted") {
+      return myApplications.filter((app) => app.status === "SHORTLISTED");
+    }
+    if (selectedTab === "hired") {
+      return myApplications.filter((app) => app.status === "HIRED");
+    }
+    if (selectedTab === "rejected") {
+      return myApplications.filter((app) =>
+        ["REJECTED", "WITHDRAWN"].includes(app.status),
+      );
+    }
+    return myApplications;
+  }, [myApplications, selectedTab]);
 
   useEffect(() => {
     dispatch(fetchMyApplications());
-  }, []);
+  }, [dispatch]);
 
 
- 
-
-
-  console.log("myApplications ------------------- ",myApplications)
   return (
     <div className="max-w-5xl min-w-5xl max-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -98,7 +113,7 @@ const Application = () => {
           <TabsTrigger value="rejected">Closed</TabsTrigger>
         </TabsList>
         <TabsContent className={"space-y-2"} value={selectedTab}>
-          {myApplications.map((item) => (
+          {visibleApplications.map((item) => (
             <ApplicationCard key={item.id} app={item} />
           ))}
         </TabsContent>

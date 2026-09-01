@@ -257,7 +257,7 @@ const AIScreening = () => {
               </Badge>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              Top candidates matching 90%+ of job requirements
+              Candidates with an AI screening score of 80 or higher
             </p>
           </CardHeader>
 

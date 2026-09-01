@@ -63,7 +63,7 @@ const Login = () => {
             <Input
               id="email"
               type={"email"}
-              placeholder="zosh@gmail.com"
+              placeholder="you@example.com"
               {...register("email")}
               className={cn(
                 "pl-10 h-11 transition-all",

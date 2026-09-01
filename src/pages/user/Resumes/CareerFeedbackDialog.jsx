@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Sparkles } from "lucide-react";
-import { toast } from "sonner";
+import { notifyError } from "../../../lib/notifications";
 import {
   Dialog,
   DialogContent,
@@ -78,9 +78,8 @@ const CareerFeedbackDialog = ({ open, onClose, resume }) => {
           additionalContext: prompt.trim() || null,
         }),
       ).unwrap();
-      toast.success("Career feedback ready");
     } catch (error) {
-      toast.error(error || "Failed to get career feedback");
+      notifyError(error || "Failed to get career feedback");
     }
   };
 

@@ -153,7 +153,13 @@ const CategoryTab = ({ categories }) => {
                       <span>-</span>
                     )}
                   </TableCell>
-                  <TableCell>{0}</TableCell>
+                  <TableCell>
+                    {
+                      categories.filter(
+                        (child) => child.parentId === category.id,
+                      ).length
+                    }
+                  </TableCell>
                   <TableCell>
                     <Badge
                       className={`${category.verified ? "bg-green-100 text-green-700" : ""}`}

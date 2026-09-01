@@ -1,5 +1,4 @@
 import { Sparkles } from 'lucide-react';
-import React from 'react'
 import { ScrollArea } from '../../components/ui/scroll-area';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/utils';
@@ -26,7 +25,7 @@ const AdminSidebar = ({navigation}) => {
             <Sparkles className="h-4 w-4 text-white" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white truncate">ZOSHIRE.AI</p>
+            <p className="text-sm font-bold text-white truncate">JobMate</p>
             <p className="text-[10px] text-slate-500 leading-tight">
               Admin Dashboard
             </p>

@@ -14,7 +14,6 @@ import { Textarea } from "../../../components/ui/textarea";
 import TagInput from "./shared/TagInput";
 import DeleteConfirm from "./shared/DeleteConfirm";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
 import AiPromptDialog from "../../../components/ai/AiPromptDialog";
 import { generateExperienceBullets } from "../../../reduxt-store/ai/aiThunk";
 import {
@@ -80,7 +79,6 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
       : addWorkExperience({ resumeId, data: payload });
 
     await dispatch(thunk).unwrap();
-    toast.success(edit ? "Experience updated" : "Experience added");
     setEdit(null);
   };
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -89,7 +87,6 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
     await dispatch(
       deleteWorkExperience({ resumeId, workExperienceId: delItem.id }),
     ).unwrap();
-    toast.success("Experience deleted");
   };
 
   const handleGenerateBullets = async (prompt) => {
@@ -117,7 +114,6 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
       ...current,
       description: bullets.map((bullet) => `• ${bullet}`).join("\n"),
     }));
-    toast.success("Bullet points generated");
   };
 
   return (
@@ -168,7 +164,7 @@ const WorkExperienceSection = ({ resumeId, resume, otherResumes = [] }) => {
             <Input
               value={form.companyName}
               onChange={f("companyName")}
-              placeholder="zosh pvt."
+              placeholder="JobMate Technologies"
             />
           </FRow>
 

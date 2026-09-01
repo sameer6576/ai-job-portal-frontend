@@ -74,7 +74,7 @@ const Register = () => {
             <Input
               id="fullName"
               type={"fullName"}
-              placeholder="zosh"
+              placeholder="Your name"
               {...register("fullName")}
               className={cn(
                 "pl-10 h-11 transition-all",
@@ -96,7 +96,7 @@ const Register = () => {
             <Input
               id="email"
               type={"email"}
-              placeholder="zosh@gmail.com"
+              placeholder="you@example.com"
               {...register("email")}
               className={cn(
                 "pl-10 h-11 transition-all",

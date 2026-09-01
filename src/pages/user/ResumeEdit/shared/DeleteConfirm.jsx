@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "sonner";
+import { notifyError } from "../../../../lib/notifications";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,7 @@ const DeleteConfirm = ({ label, onConfirm, onClose, open }) => {
       await onConfirm();
       onClose();
     } catch (error) {
-      toast.error(
+      notifyError(
         typeof error === "string" ? error : error?.message || `Failed to delete ${label}`,
       );
     } finally {

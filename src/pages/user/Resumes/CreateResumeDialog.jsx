@@ -19,7 +19,7 @@ import {
 import { Button } from "../../../components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { createResume } from "../../../reduxt-store/resume/resumeThunk";
-import { toast } from "sonner";
+import { notifyError } from "../../../lib/notifications";
 
 const CreateResumeDialog = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
@@ -33,7 +33,7 @@ const CreateResumeDialog = ({ open, onClose }) => {
   const handleSubmit = async () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      toast.error("Resume title is required");
+      notifyError("Resume title is required");
       return;
     }
 
@@ -44,11 +44,11 @@ const CreateResumeDialog = ({ open, onClose }) => {
         template: "PROFESSIONAL",
         visibility: "PUBLIC",
       })).unwrap();
-      toast.success("Resume created successfully");
       setTitle("");
       setIsDefault(false);
+      onClose();
     } catch (error) {
-      toast.error(error || "Failed to create resume");
+      notifyError(error || "Failed to create resume");
     }
   };
   return (

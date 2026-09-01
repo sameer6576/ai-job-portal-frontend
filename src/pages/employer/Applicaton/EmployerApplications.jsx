@@ -63,7 +63,7 @@ const EmployerApplications = () => {
         .length,
       unread: applications.filter((app) => !app.isRead).length,
       autoShortlisted: applications.filter(
-        (app) => app.status === "AUTO_SHORTLISTED",
+        (app) => app.aiShortListStatus === "AUTO_SHORTLISTED",
       ).length,
     }),
     [applications],
@@ -71,7 +71,7 @@ const EmployerApplications = () => {
 
   useEffect(() => {
     if (myCompany) {
-      dispatch(fetchMyJobs(myCompany?.id));
+      dispatch(fetchMyJobs());
     }
   }, [dispatch, myCompany]);
 

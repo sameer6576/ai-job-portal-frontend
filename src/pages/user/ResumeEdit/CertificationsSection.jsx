@@ -6,7 +6,6 @@ import SectionDialog from "./shared/SectionDialog"
 import DeleteConfirm from "./shared/DeleteConfirm"
 import FRow from "./shared/FRow"
 import { Input } from "../../../components/ui/input"
-import { toast } from "sonner"
 import { addCertification, deleteCertification, updateCertification } from "../../../reduxt-store/resume/resumeThunk"
 
 const EMPTY_CERTIFICATION = {
@@ -42,7 +41,6 @@ const CertificationsSection = ({ resumeId, resume }) => {
     await dispatch(editing
       ? updateCertification({ resumeId, certificationId: editing.id, data })
       : addCertification({ resumeId, data })).unwrap()
-    toast.success(editing ? "Certification updated" : "Certification added")
   }
 
   return (
@@ -71,7 +69,6 @@ const CertificationsSection = ({ resumeId, resume }) => {
         onClose={() => setDeleting(null)}
         onConfirm={async () => {
           await dispatch(deleteCertification({ resumeId, certificationId: deleting.id })).unwrap()
-          toast.success("Certification deleted")
         }}
         label="Certification"
       />

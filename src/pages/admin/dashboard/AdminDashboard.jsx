@@ -1,20 +1,20 @@
-import { Briefcase } from "lucide-react";
-import { FileText } from "lucide-react";
 import { Building2 } from "lucide-react";
 import { Users } from "lucide-react";
-import React from "react";
+import { UserRoundSearch, UserCog } from "lucide-react";
 import StatsCard from "./StatsCard";
 import UserTable from "../users/UserTable";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchAllUsers } from "../../../reduxt-store/adminUser/adminThunk";
 import { useDispatch } from "react-redux";
+import { fetchAllCompanies } from "../../../reduxt-store/company/companyThunk";
 
 
 
 
 const AdminDashboard = () => {
   const {users}=useSelector(state=>state.adminUser)
+  const {companies}=useSelector(state=>state.company)
   const dispatch=useDispatch()
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -29,34 +29,35 @@ const AdminDashboard = () => {
     value: users?.length || 0,
     icon: Users,
     color: "blue",
-    description: "2,341 active this week",
+    description: "Registered accounts",
   },
   {
-    title: "Active Jobs",
-    value: "8,234",
-    icon: Briefcase,
+    title: "Job Seekers",
+    value: users?.filter((user) => user.role === "ROLE_JOB_SEEKER").length || 0,
+    icon: UserRoundSearch,
     color: "green",
-    description: "523 posted today",
+    description: "Candidate accounts",
   },
   {
     title: "Companies",
-    value: "1,452",
+    value: companies?.length || 0,
     icon: Building2,
     color: "purple",
-    description: "124 pending review",
+    description: "Registered companies",
   },
   {
-    title: "Applications",
-    value: "45,678",
-    icon: FileText,
+    title: "Employers",
+    value: users?.filter((user) => user.role === "ROLE_EMPLOYER").length || 0,
+    icon: UserCog,
     color: "orange",
-    description: "3,211 submitted today",
+    description: "Employer accounts",
   },
 ];
 
  useEffect(() => {
     dispatch(fetchAllUsers());
-  }, []);
+    dispatch(fetchAllCompanies());
+  }, [dispatch]);
 
   return (
     <div className="space-y-6">
