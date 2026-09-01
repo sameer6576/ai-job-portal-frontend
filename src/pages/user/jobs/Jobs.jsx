@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import { fetchJobs } from "../../../reduxt-store/job/jobThunk";
 import { useSelector } from "react-redux";
 import { enhanceSearch } from "../../../reduxt-store/ai/aiThunk";
+import { fetchMySavedJobs } from "../../../reduxt-store/saveJobs/saveJobThunk";
 import { useMemo } from "react";
 
 const SORT_OPTIONS = [
@@ -47,7 +48,14 @@ const Jobs = () => {
   const [sortBy, setSortBy] = useState(SORT_OPTIONS[0].value);
   const dispatch = useDispatch();
   const { jobs } = useSelector((state) => state.job);
+  const { token } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchMySavedJobs());
+    }
+  }, [dispatch, token]);
 
   const handleSortBy = (value) => {
     setSortBy(value);

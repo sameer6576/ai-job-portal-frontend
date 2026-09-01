@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchCurrentUser, loginUser, registerUser, updateUser } from "./userThunk";
 
+const storedToken = localStorage.getItem("accessToken");
+
 const initialState = {
   user: null,
-  token: localStorage.getItem("accessToken") || null,
+  token: storedToken || null,
   isAuthenticated: false,
-  isLoading: false,
+  // Keep protected routes in a loading state while a persisted session is restored.
+  isLoading: Boolean(storedToken),
   error: null,
 };
 

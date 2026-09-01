@@ -23,16 +23,36 @@ import {  useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchJobById } from "../../../reduxt-store/job/jobThunk";
+import {
+  fetchMySavedJobs,
+  saveJob,
+  unsaveJob,
+} from "../../../reduxt-store/saveJobs/saveJobThunk";
 import { useSelector } from "react-redux";
 
 const JobDetails = () => {
   
   const {currentJob:job}=useSelector(state=>state.job)
+  const { savedJobMap } = useSelector((state) => state.savedJob);
+  const { token } = useSelector((state) => state.auth);
   
   const navigate=useNavigate()
   const {id}=useParams()
   const dispatch=useDispatch()
 
+  const savedJobId = savedJobMap[Number(id)];
+
+  const handleSavedJob = () => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    if (savedJobId) {
+      dispatch(unsaveJob(savedJobId));
+    } else {
+      dispatch(saveJob({ jobId: Number(id) }));
+    }
+  };
 
   useEffect(()=>{
 
@@ -41,6 +61,12 @@ const JobDetails = () => {
     }
 
   },[id])
+
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchMySavedJobs());
+    }
+  }, [dispatch, token]);
   
 if(job==null){
   return <div className="flex items-center justify-between min h-screen">
@@ -98,8 +124,16 @@ const location = [job?.city, job?.state, job?.country];
                         {job.company.tagline}
                       </p>
                     </div>
-                    <Button variant="ghost">
-                      <Bookmark />
+                    <Button
+                      onClick={handleSavedJob}
+                      variant="ghost"
+                      aria-label={savedJobId ? "Remove saved job" : "Save job"}
+                    >
+                      <Bookmark
+                        className={
+                          savedJobId ? "text-primary fill-primary" : ""
+                        }
+                      />
                     </Button>
                   </div>
 

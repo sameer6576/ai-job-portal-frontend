@@ -11,8 +11,11 @@ import { Badge } from "../../../components/ui/badge";
 import { Separator } from "../../../components/ui/separator";
 import { Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { saveJob } from "../../../reduxt-store/saveJobs/saveJobThunk";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  saveJob,
+  unsaveJob,
+} from "../../../reduxt-store/saveJobs/saveJobThunk";
 
 const hasApplied = false;
 
@@ -24,10 +27,22 @@ const JobCard = ({ job }) => {
     .join(", ");
 
 
-    const dispatch=useDispatch()
-    const handleSavedJob=()=>{
-      dispatch(saveJob({jobId:job.id}))
+  const dispatch = useDispatch();
+  const { savedJobMap } = useSelector((store) => store.savedJob);
+  const { token } = useSelector((store) => store.auth);
+  const savedJobId = savedJobMap[job.id];
+
+  const handleSavedJob = () => {
+    if (!token) {
+      navigate("/login");
+      return;
     }
+    if (savedJobId) {
+      dispatch(unsaveJob(savedJobId));
+    } else {
+      dispatch(saveJob({ jobId: job.id }));
+    }
+  };
   return (
   
     <Card >
@@ -68,8 +83,14 @@ const JobCard = ({ job }) => {
                   {job.company.tagline}
                 </p>
               </div>
-              <Button onClick={handleSavedJob} variant="ghost">
-                <Bookmark />
+              <Button
+                onClick={handleSavedJob}
+                variant="ghost"
+                aria-label={savedJobId ? "Remove saved job" : "Save job"}
+              >
+                <Bookmark
+                  className={savedJobId ? "text-primary fill-primary" : ""}
+                />
               </Button>
             </div>
 

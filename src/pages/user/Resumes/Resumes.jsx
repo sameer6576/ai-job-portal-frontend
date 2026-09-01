@@ -1,5 +1,4 @@
 import { FileText } from "lucide-react";
-import React from "react";
 import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";
 import { Star } from "lucide-react";
@@ -10,7 +9,7 @@ import CreateResumeDialog from "./CreateResumeDialog";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchMyResumes, setDefaultResume } from "../../../reduxt-store/resume/resumeThunk";
+import { fetchMyResumes } from "../../../reduxt-store/resume/resumeThunk";
 
 const Resumes = () => {
   const [showCreate, setShowCreate] = useState(false);
@@ -20,7 +19,7 @@ const Resumes = () => {
 
   useEffect(() => {
     dispatch(fetchMyResumes());
-  }, []);
+  }, [dispatch]);
 
   const defaultResume=resumes.find((r)=>r.isDefault)
   
@@ -63,7 +62,7 @@ const Resumes = () => {
         {/* list of resume */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {resumes.map((item) => (
-            <ResumeCard resume={item} />
+            <ResumeCard key={item.id} resume={item} />
           ))}
 
           <button

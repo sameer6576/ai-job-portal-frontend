@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardContent } from "../../../components/ui/card";
 import { User } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
@@ -12,7 +11,11 @@ import { Star } from "lucide-react";
 import { StarOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setDefaultResume } from "../../../reduxt-store/resume/resumeThunk";
+import {
+  deleteResume,
+  setDefaultResume,
+} from "../../../reduxt-store/resume/resumeThunk";
+import { toast } from "sonner";
 
 
 
@@ -36,9 +39,27 @@ const ResumeCard = ({ resume }) => {
   const dispatch=useDispatch();
   const navigate=useNavigate()
 
-  const handleSetDefaultResume=()=>{
-    dispatch(setDefaultResume(resume.id))
-  }
+  const handleSetDefaultResume = async () => {
+    try {
+      await dispatch(setDefaultResume(resume.id)).unwrap();
+      toast.success("Default resume updated");
+    } catch (error) {
+      toast.error(error || "Failed to set default resume");
+    }
+  };
+
+  const handleDeleteResume = async () => {
+    if (!window.confirm(`Delete "${resume.title}"? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await dispatch(deleteResume(resume.id)).unwrap();
+      toast.success("Resume deleted successfully");
+    } catch (error) {
+      toast.error(error || "Failed to delete resume");
+    }
+  };
 
   const completionScore = computeCompletionScore(resume);
   return (
@@ -81,7 +102,12 @@ const ResumeCard = ({ resume }) => {
             Edit
           </Button>
 
-          <Button variant="" size="icon">
+          <Button
+            onClick={handleDeleteResume}
+            variant="destructive"
+            size="icon"
+            aria-label={`Delete ${resume.title}`}
+          >
             <Trash2 className="h-3 w-3 " />
           </Button>
         </div>

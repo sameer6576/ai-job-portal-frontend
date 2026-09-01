@@ -17,7 +17,12 @@ const savedJobSlice = createSlice({
         ((state.isLoading = true), (state.error = null));
       })
       .addCase(fetchMySavedJobs.fulfilled, (state, action) => {
-        ((state.isLoading = false), (state.savedJobs = action.payload));
+        state.isLoading = false;
+        state.savedJobs = action.payload;
+        state.savedJobMap = {};
+        action.payload.forEach((savedJob) => {
+          state.savedJobMap[savedJob.jobId] = savedJob.id;
+        });
       })
       .addCase(fetchMySavedJobs.rejected, (s, { payload }) => {
         s.isLoading = false;
@@ -52,7 +57,7 @@ const savedJobSlice = createSlice({
         s.savedJobs = s.savedJobs.filter((sj) => sj.id !== deletedId);
       })
       .addCase(unsaveJob.rejected, (s, { payload }) => {
-        s.Loading = false;
+        s.isLoading = false;
         s.error = payload;
       });
   },

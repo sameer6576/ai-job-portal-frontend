@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,28 +17,44 @@ import {
   FieldLabel,
 } from "../../../components/ui/field";
 import { Button } from "../../../components/ui/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createResume } from "../../../reduxt-store/resume/resumeThunk";
+import { toast } from "sonner";
 
 const CreateResumeDialog = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
-  const [isDefalut, setIsDefault] = useState();
-  const dispatch=useDispatch()
+  const [isDefault, setIsDefault] = useState(false);
+  const dispatch = useDispatch();
+  const { isActionLoading } = useSelector((store) => store.resume);
 
   const handleClose = () => {
     onClose();
   };
-  const handleSubmit = () => {
-    dispatch(createResume({
-      title,
-      isDefalut,
-      template: "PROFESSIONAL",
-      visibility: "PUBLIC",
-    }))
-    console.log("resume data", { title, isDefalut });
+  const handleSubmit = async () => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      toast.error("Resume title is required");
+      return;
+    }
+
+    try {
+      await dispatch(createResume({
+        title: trimmedTitle,
+        isDefault,
+        template: "PROFESSIONAL",
+        visibility: "PUBLIC",
+      })).unwrap();
+      toast.success("Resume created successfully");
+      setTitle("");
+      setIsDefault(false);
+    } catch (error) {
+      toast.error(error || "Failed to create resume");
+    }
   };
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={(nextOpen) => {
+      if (!nextOpen) handleClose();
+    }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className={"flex items-center gap-2"}>
@@ -61,7 +76,7 @@ const CreateResumeDialog = ({ open, onClose }) => {
           </div>
           <div>
             <Field orientation="horizontal">
-              <Checkbox checked={isDefalut} onCheckedChange={setIsDefault} />
+              <Checkbox checked={isDefault} onCheckedChange={setIsDefault} />
               <FieldContent>
                 <FieldLabel htmlFor="terms-checkbox-2">
                   Set as default resume
@@ -75,7 +90,9 @@ const CreateResumeDialog = ({ open, onClose }) => {
         </div>
         <DialogFooter>
         <Button variant="outline" onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSubmit}>Create Resume</Button>
+        <Button onClick={handleSubmit} disabled={isActionLoading}>
+          {isActionLoading ? "Creating..." : "Create Resume"}
+        </Button>
       </DialogFooter>
       </DialogContent>
       
